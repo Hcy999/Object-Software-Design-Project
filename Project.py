@@ -4,7 +4,7 @@ class Road:
     def __init__(self, name, length):
         self.name = name
         self.length = length
-        self.head = None  
+        self.road_items = []  
 
     def get_length(self):
         return self.length
@@ -13,16 +13,8 @@ class Road:
         return self.name
 
     def add_road_item(self, road_item):
-        road_item.set_current_road(self)
-        
-        if not self.head:
-            self.head = road_item
-        else:
-            current_item = self.head
-            while current_item.get_next():
-                current_item = current_item.get_next()
-            current_item.set_next(road_item)
-            road_item.set_previous(current_item)
+       road_item.set_current_road(self)
+       self.road_items.append(road_item)  
 
 
 class RoadItem:
@@ -54,16 +46,16 @@ class RoadItem:
         self.prev_item = prev_item
 
 
-class Static(RoadItem):
+class StaticRoadItem(RoadItem):
     def __init__(self, mile_marker, current_road=None):
         super().__init__(mile_marker, current_road)
         
 
-class StopSign(Static):
+class StopSign(StaticRoadItem):
     def __init__(self, mile_marker, current_road=None):
         super().__init__(mile_marker, current_road)
        
-class Intersection(Static):
+class Intersection(StaticRoadItem):
     def __init__(self, mile_marker, current_road=None, turns=None):
         super().__init__(mile_marker, current_road)
         self.turns = turns if turns is not None else []  
@@ -74,7 +66,7 @@ class Intersection(Static):
     def get_turn(self, index):
         return self.turns[index] if index < len(self.turns) else None
     
-class SpeedLimit(Static):
+class SpeedLimit(StaticRoadItem):
     def __init__(self, mile_marker, current_road=None, speed_limit=None):
         super().__init__(mile_marker, current_road)
         self.speed_limit = speed_limit
@@ -82,13 +74,13 @@ class SpeedLimit(Static):
     def get_speed_limit(self):
         return self.speed_limit
 
-class Yield(Static):
+class Yield(StaticRoadItem):
     def __init__(self, mile_marker, current_road=None):
         super().__init__(mile_marker, current_road)
 
 
 # Dynamic abstractmethod
-class Dynamic(RoadItem, ABC):
+class DynamicRoadItem(RoadItem, ABC):
     def __init__(self, mile_marker, current_road=None):
         super().__init__(mile_marker, current_road)
 
@@ -97,7 +89,7 @@ class Dynamic(RoadItem, ABC):
         pass
 
 
-class Vehicle(Dynamic):
+class Vehicle(DynamicRoadItem):
     def __init__(self, mile_marker, current_road=None, current_speed=0.0, desired_speed=0.0, speed_limit=0.0, color=""):
         super().__init__(mile_marker, current_road)
         self.current_speed = current_speed
@@ -142,7 +134,7 @@ class Truck(Vehicle):
         return self.load_weight
     
 
-class Light(Dynamic):
+class Light(DynamicRoadItem):
     def __init__(self, mile_marker, current_road=None, red_time=0, yellow_time=0, green_time=0):
         super().__init__(mile_marker, current_road)
         self.red_time = red_time
@@ -174,53 +166,45 @@ class Light(Dynamic):
 
 class Simulation:
     def __init__(self):
-        self.road_items = []  # Save all dynamic roaditem
-
+        self.dynamic_road_items = []  # Save all dynamic roaditem
+        self.gui = GUI()
     def update(self, seconds: int):
         # Update status of all dynamic pavement items
-        for item in self.road_items:
+        for item in self.dynamic_road_items:
             item.update(seconds)
 
     def add_dynamic_road_item(self, item):
         # Only Dynamic Items of type should be added
-        if isinstance(item, Dynamic):
-            self.road_items.append(item)
+        if isinstance(item, DynamicRoadItem):
+            self.dynamic_road_items.append(item)
         else:
             raise ValueError("Only dynamic road items can be added.")
 
-# Creating Road
-main_road = Road("Main Street", 5.0)
 
-# Creating stop signs and speed limit signs
-stop_sign = StopSign(mile_marker=1.0, current_road=main_road)
-speed_limit_sign = SpeedLimit(mile_marker=2.0, current_road=main_road, speed_limit=35)
+class Map:
+    def __init__(self):
+        self.roads = []  # Association to Roads
 
-# Add static items to the road
-main_road.add_road_item(stop_sign)
-main_road.add_road_item(speed_limit_sign)
-
-# Creating Car and Truck
-my_car = Car(mile_marker=0, current_road=main_road, current_speed=0, desired_speed=35, speed_limit=35, color="red")
-my_truck = Truck(mile_marker=0, current_road=main_road, current_speed=0, desired_speed=30, speed_limit=35, color="blue", load_weight=5000)
-
-# Creating traffic lighT
-traffic_light = Light(mile_marker=2.5, current_road=main_road, red_time=30, yellow_time=5, green_time=60)
-
-# Creating simulation
-simulation = Simulation()
-
-# Add dynamic items to the simulation
-simulation.add_dynamic_road_item(my_car)
-simulation.add_dynamic_road_item(my_truck)
-simulation.add_dynamic_road_item(traffic_light)
-
-# simulation 60 seconds
-simulation.update(60)
+    def add_road(self, road):
+        self.roads.append(road)
 
 
-print(f"Road Name: {main_road.get_road_name()}, Length: {main_road.get_length()} miles")
-print(f"Stop Sign at mile marker {stop_sign.get_mile_marker()}")
-print(f"Speed Limit Sign at mile marker {speed_limit_sign.get_mile_marker()} with limit {speed_limit_sign.get_speed_limit()} mph")
-print(f"Car at mile marker {my_car.get_mile_marker()} with a speed of {my_car.get_current_speed()} mph and color {my_car.color}")
-print(f"Truck at mile marker {my_truck.get_mile_marker()} with a speed of {my_truck.get_current_speed()} mph, color {my_truck.color}, and load weight {my_truck.get_load_weight()} units")
-print(f"Traffic Light at mile marker {traffic_light.get_mile_marker()} is {traffic_light.get_light_color()}")
+class GUI:
+    def __init__(self):
+        self.simulation = None  # Reference to the Simulation 
+        self.map = None  # Reference to the Map 
+        self.timer = None  # Reference to the Timer 
+
+    def link_simulation(self, simulation):
+        self.simulation = simulation
+
+    def link_map(self, map_):
+        self.map = map_
+
+    def link_timer(self, timer):
+        self.timer = timer
+
+
+class Timer:
+     def __init__(self):
+        self.gui = None  # GUI
