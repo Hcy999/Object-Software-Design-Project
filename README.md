@@ -1,1 +1,1 @@
-To run the programming. Type python main.py 
+To run the programming. Typing python main.py 
