@@ -7,23 +7,6 @@ class Map:
     def add_road(self, road):
         self.roads.append(road)
 
-
-class GUI:
-    def __init__(self):
-        self.simulation = None  # Reference to the Simulation 
-        self.map = None  # Reference to the Map 
-        self.timer = None  # Reference to the Timer 
-
-    def link_simulation(self, simulation):
-        self.simulation = simulation
-
-    def link_map(self, map_):
-        self.map = map_
-
-    def link_timer(self, timer):
-        self.timer = timer
-
-
 class Timer:
      def __init__(self):
         self.gui = None  # GUI

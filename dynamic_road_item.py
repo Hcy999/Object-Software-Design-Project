@@ -58,10 +58,10 @@ class Car(Vehicle):
         super().__init__(mile_marker, current_road, current_speed, desired_speed)
 
     def accelerate(self, seconds_delta):
-        self.set_current_speed(self.get_current_speed() + Constants.ACC_RATE * seconds_delta * Constants.MPS_TO_MPH)
+        self.set_current_speed(self.get_current_speed() + Constants.ACC_RATE * seconds_delta)
 
     def decelerate(self, seconds_delta):
-        self.set_current_speed(self.get_current_speed() - Constants.DEC_RATE * seconds_delta * Constants.MPS_TO_MPH)
+        self.set_current_speed(self.get_current_speed() - Constants.DEC_RATE * seconds_delta)
 
 class Truck(Vehicle):
     def __init__(self, mile_marker, current_road=None, current_speed=0.0, desired_speed=0.0, load_weight=0):
@@ -70,17 +70,15 @@ class Truck(Vehicle):
 
     def accelerate(self, seconds_delta):
         if self.load_weight <= 5:
-            self.set_current_speed(self.get_current_speed() + Constants.ACC_RATE_EMPTY * seconds_delta * Constants.MPS_TO_MPH)
+            self.set_current_speed(self.get_current_speed() + Constants.ACC_RATE_EMPTY * seconds_delta)
         else:
-            self.set_current_speed(self.get_current_speed() + Constants.ACC_RATE_FULL * seconds_delta * Constants.MPS_TO_MPH)
+            self.set_current_speed(self.get_current_speed() + Constants.ACC_RATE_FULL * seconds_delta)
 
     def decelerate(self, seconds_delta):
         if self.load_weight <= 5:
-            self.set_current_speed(self.get_current_speed() - Constants.DEC_RATE_EMPTY * seconds_delta * Constants.MPS_TO_MPH)
+            self.set_current_speed(self.get_current_speed() - Constants.DEC_RATE_EMPTY * seconds_delta)
         else:
-            self.set_current_speed(self.get_current_speed() - Constants.DEC_RATE_FULL * seconds_delta * Constants.MPS_TO_MPH)
-
-    
+            self.set_current_speed(self.get_current_speed() - Constants.DEC_RATE_FULL * seconds_delta)
 
 class Light(DynamicRoadItem):
     def __init__(self, mile_marker, current_road=None, red_time=0, yellow_time=0, green_time=0):
