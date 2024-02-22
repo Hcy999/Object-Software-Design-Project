@@ -1,7 +1,6 @@
 # GUI.py
 
-MPS_TO_KPH = 3.6
-MPS_TO_MPH = 2.237
+
 
 class ISimInput:
     def set_speed_limit(self, vehicle, speed):
