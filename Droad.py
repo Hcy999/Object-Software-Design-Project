@@ -8,7 +8,7 @@ class Constants:
     DEC_RATE = 7.0          # Braking rate for cars in m/s
     DEC_RATE_EMPTY = 5.0    # Braking rate for light trucks in m/s
     DEC_RATE_FULL = 2.0     # Braking rate for heavy trucks in m/s
-
+    MPS_TO_MPH = 2.237
 
 class DynamicRoadItem(RoadItem, ABC):
     def __init__(self, mile_marker, current_road=None):

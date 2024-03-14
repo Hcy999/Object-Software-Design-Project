@@ -1,18 +1,17 @@
 class Road:
-    def __init__(self, name, length):
-        self.name = name
+    NumOfRoads = 0
+
+    def __init__(self, streetName, locX, locY, length, heading):
+        self.name = streetName
         self.length = length
-        self.road_items = []  
+        self.heading = heading
+        self.xlocation = locX
+        self.ylocation = locY
+        Road.NumOfRoads += 1
 
-    def get_length(self):
-        return self.length
+    def print(self, print_driver, o):
+        print_driver.print_road(self, o)
 
-    def get_road_name(self):
-        return self.name
-
-    def add_road_item(self, road_item):
-       road_item.set_current_road(self)
-       self.road_items.append(road_item)  
 
 
 class RoadItem:
