@@ -1,61 +1,64 @@
-# main.py
-from road import Road, StopSign, Intersection, SpeedLimit, Yield
-from Droad import Car, Truck, Light
+from road import Road
+from Droad import Car, Truck, TrafficLight
 from GUI import MetricGUI, ImperialGUI  
 from print_driver import ConsolePrint
 from map import Map, CharMatrix
 from constants import Constants, Heading
+import time
+
+def print_traffic_lights(traffic_lights, char_matrix):
+    # 第一个信号灯的行索引
+    first_tl_row_index = len(char_matrix.map) - 13
+    # 第二个信号灯的行索引应该比第一个信号灯的行索引小 13
+    second_tl_row_index = first_tl_row_index - 13
+
+    # 打印第一个信号灯
+    symbol = {'red': 'X', 'yellow': '-', 'green': 'O'}[traffic_lights[0].current_color]
+    char_matrix.map[first_tl_row_index][traffic_lights[0].mile_marker] = symbol
+
+    # 打印第二个信号灯
+    symbol = {'green': 'O','red': 'X', 'yellow': '-' }[traffic_lights[1].current_color]
+    char_matrix.map[second_tl_row_index][traffic_lights[1].mile_marker] = symbol
+
+
 
 def main():
-    # # let the user choose the unit system
-    # unit = None
-    # while unit not in ('I', 'M'):
-    #     unit = input('Enter "M" for metric or "I" for Imperial: ').strip().upper()
-    #     if unit not in ('I', 'M'):
-    #         print('Invalid input. Please enter "I" for Imperial or "M" for metric.')
-
-    # # let user enter a speed limit based on the user-selected unit system
-    # speed_unit = 'km/h' if unit == 'M' else 'mph'
-    # speed_limit = None
-    # while speed_limit is None:
-    #     try:
-    #         speed_limit = float(input(f"Enter the speed limit in {speed_unit}: "))
-    #     except ValueError:
-    #         print(f"Invalid input. Please enter a number for the speed limit in {speed_unit}.")
-
-    # # Initialize vehicles
-    # car = Car(mile_marker=0, current_speed=0.0)
-    # truck1 = Truck(mile_marker=0, current_speed=0.0, load_weight=4)
-    # truck2 = Truck(mile_marker=0, current_speed=0.0, load_weight=8)
-    # vehicles = [car, truck1, truck2]
-
-    # gui = MetricGUI() if unit == 'M' else ImperialGUI()
-
-    # for vehicle in vehicles:
-    #     gui.set_speed_limit(vehicle, speed_limit)
-
-    # for i in range(11):
-    #     print(f"Time: {i+1} seconds")
-    #     for vehicle in vehicles:
-    #         vehicle.update_speed(1)  
-    #         speed = gui.get_speed(vehicle)
-    #         print(f"{type(vehicle).__name__} speed: {speed:.2f} {speed_unit}")
     sim_input = MetricGUI()
     map_obj = Map()
     cp = ConsolePrint()
 
-    # create road
+    # 创建道路
     uptown = sim_input.create_road("Uptown", 0, -0.09, 0.180, Heading.North)
     map_obj.add_road(uptown)
-    crosstown = sim_input.create_road("Crosstown", -0.09, 0, 0.180, Heading.East)
-    map_obj.add_road(crosstown)
 
-    # Create a character matrix and print the map
-    cm = CharMatrix()
-    map_obj.print(cp, cm)
+    # 创建第一个信号灯
+    traffic_light1 = TrafficLight(mile_marker=26, red_duration=5, yellow_duration=2, green_duration=3)
+    # 创建第二个信号灯，位于第一个信号灯上方13行
+    traffic_light2 = TrafficLight(mile_marker=26, green_duration=5, yellow_duration=2, red_duration=3)
+    traffic_light2.current_color = 'green'
+    # 将两个信号灯放入列表
+    traffic_lights = [traffic_light1, traffic_light2]
 
-    for row in cm.map:
-        print(''.join(row))
+    # 模拟一段时间，这里设置为1秒，用于测试
+    for time_step in range(10):
+        # 更新交通灯
+        for tl in traffic_lights:
+            tl.update()
+
+        # 创建一个新的字符矩阵
+        cm = CharMatrix()
+
+        # 更新交通灯在字符矩阵上的显示
+        print_traffic_lights(traffic_lights, cm)
+
+        # 使用map_obj的打印方法来打印地图
+        map_obj.print(cp, cm)
+
+        for row in cm.map:
+            print(''.join(row))
+
+        # 暂停1秒钟
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()

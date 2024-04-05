@@ -1,3 +1,4 @@
+
 class Road:
     NumOfRoads = 0
 
@@ -8,10 +9,16 @@ class Road:
         self.xlocation = locX
         self.ylocation = locY
         Road.NumOfRoads += 1
+        self.items = []  # Initialize the items list here
+
+    def add_item(self, item):
+        self.items.append(item)  # Add the add_item method here
 
     def print(self, print_driver, o):
         print_driver.print_road(self, o)
-
+        for item in self.items:
+            # Assumes each road item has a print_road_item method
+            item.print_road_item(o)
 
 
 class RoadItem:
@@ -41,37 +48,4 @@ class RoadItem:
 
     def set_previous(self, prev_item):
         self.prev_item = prev_item
-
-
-class StaticRoadItem(RoadItem):
-    def __init__(self, mile_marker, current_road=None):
-        super().__init__(mile_marker, current_road)
-        
-
-class StopSign(StaticRoadItem):
-    def __init__(self, mile_marker, current_road=None):
-        super().__init__(mile_marker, current_road)
-       
-class Intersection(StaticRoadItem):
-    def __init__(self, mile_marker, current_road=None, turns=None):
-        super().__init__(mile_marker, current_road)
-        self.turns = turns if turns is not None else []  
-
-    def add_turn(self, turn):
-        self.turns.append(turn)
-
-    def get_turn(self, index):
-        return self.turns[index] if index < len(self.turns) else None
-    
-class SpeedLimit(StaticRoadItem):
-    def __init__(self, mile_marker, current_road=None, speed_limit=None):
-        super().__init__(mile_marker, current_road)
-        self.speed_limit = speed_limit
-
-    def get_speed_limit(self):
-        return self.speed_limit
-
-class Yield(StaticRoadItem):
-    def __init__(self, mile_marker, current_road=None):
-        super().__init__(mile_marker, current_road)
 

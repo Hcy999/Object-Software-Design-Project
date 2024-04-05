@@ -1,14 +1,8 @@
 from abc import ABC, abstractmethod
 from road import RoadItem
+from constants import Constants  # 这将从constants.py文件导入Constants
 
-class Constants:
-    ACC_RATE = 3.5          # Acceleration rate for cars in m/s
-    ACC_RATE_EMPTY = 2.5    # Acceleration rate for light trucks in m/s
-    ACC_RATE_FULL = 1.0     # Acceleration rate for heavy trucks in m/s
-    DEC_RATE = 7.0          # Braking rate for cars in m/s
-    DEC_RATE_EMPTY = 5.0    # Braking rate for light trucks in m/s
-    DEC_RATE_FULL = 2.0     # Braking rate for heavy trucks in m/s
-    MPS_TO_MPH = 2.237
+
 
 class DynamicRoadItem(RoadItem, ABC):
     def __init__(self, mile_marker, current_road=None):
@@ -80,31 +74,41 @@ class Truck(Vehicle):
         else:
             self.set_current_speed(self.get_current_speed() - Constants.DEC_RATE_FULL * seconds_delta)
 
-class Light(DynamicRoadItem):
-    def __init__(self, mile_marker, current_road=None, red_time=0, yellow_time=0, green_time=0):
-        super().__init__(mile_marker, current_road)
-        self.red_time = red_time
-        self.yellow_time = yellow_time
-        self.green_time = green_time
-        # Assuming the light starts at red
-        self.color = 'red'
-        # Time for which the light has been on
-        self.time_on = 0
 
-    def update(self, seconds):
-        # Increment the time the light has been on
-        self.time_on += seconds
-        
-        # Determine the current color based on the time the light has been on
-        cycle_time = self.red_time + self.yellow_time + self.green_time
-        time_in_current_cycle = self.time_on % cycle_time
-        
-        if time_in_current_cycle <= self.red_time:
-            self.color = 'red'
-        elif time_in_current_cycle <= self.red_time + self.yellow_time:
-            self.color = 'yellow'
+
+class TrafficLight(DynamicRoadItem):
+    def __init__(self, mile_marker, red_duration, yellow_duration, green_duration, start_color='red'):
+        super().__init__(mile_marker)
+        self.red_duration = red_duration
+        self.yellow_duration = yellow_duration
+        self.green_duration = green_duration
+        self.current_color = start_color
+        self.timer = 0  # Initialize timer to keep track of light changes
+
+    def update(self, seconds=1):
+        self.timer += seconds
+        # Calculate the total duration of the traffic light cycle
+        cycle_duration = self.red_duration + self.yellow_duration + self.green_duration
+        # Using modulo to cycle through the light colors
+        self.timer %= cycle_duration
+        if self.timer <= self.red_duration:
+            self.current_color = 'red'
+        elif self.timer <= self.red_duration + self.yellow_duration:
+            self.current_color = 'yellow'
         else:
-            self.color = 'green'
+            self.current_color = 'green'
 
-    def get_light_color(self):
-        return self.color
+    def print_traffic_lights(traffic_lights, char_matrix):
+    # 遍历每个交通灯
+        for tl in traffic_lights:
+            # 获取交通灯当前颜色对应的符号
+            symbol = {'red': 'X', 'yellow': '-', 'green': 'O'}[tl.current_color]
+            # 获取交通灯的位置
+            row_index = len(char_matrix.map) - 1  # 假设交通灯在最底行
+            column_index = tl.mile_marker
+            # 在交通灯所在列向上搜索竖线，找到最接近的一个位置并显示交通灯
+            for i in range(row_index, -1, -1):
+                if char_matrix.map[i][column_index] == '|':
+                    char_matrix.map[i][column_index] = symbol
+                    break
+

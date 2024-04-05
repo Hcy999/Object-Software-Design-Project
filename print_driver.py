@@ -28,4 +28,3 @@ class ConsolePrint(IPrintDriver):
                     char_matrix.map[y + 2][CCx + distance] = '-'
                     char_matrix.map[y + 4][CCx + distance] = '-'
                 distance += 1
-        # 
