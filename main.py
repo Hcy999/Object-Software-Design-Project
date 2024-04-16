@@ -5,6 +5,8 @@ from print_driver import ConsolePrint
 from map import Map, CharMatrix
 from constants import Constants, Heading
 import time
+import os
+import platform
 
 def print_traffic_lights(traffic_lights, char_matrix):
     # 第一个信号灯的行索引
@@ -20,6 +22,12 @@ def print_traffic_lights(traffic_lights, char_matrix):
     symbol = {'green': 'O','red': 'X', 'yellow': '-' }[traffic_lights[1].current_color]
     char_matrix.map[second_tl_row_index][traffic_lights[1].mile_marker] = symbol
 
+@staticmethod
+def clear_screen():
+    if platform.system() == "Windows":
+        os.system("cls")
+    else:
+        os.system("clear")
 
 
 def main():
@@ -59,6 +67,7 @@ def main():
 
         # 暂停1秒钟
         time.sleep(1)
+        clear_screen()
 
 if __name__ == "__main__":
     main()
