@@ -16,5 +16,5 @@ class CharMatrix:
         self.size = size
         self.map = [[' ' for _ in range(size)] for _ in range(size)]
     def clear(self):
-            # 清空整个矩阵，重置为初始状态
+            
             self.map = [[' ' for _ in range(self.size)] for _ in range(self.size)]

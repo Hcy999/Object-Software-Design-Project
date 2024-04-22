@@ -83,13 +83,11 @@ class TrafficLight(DynamicRoadItem):
         self.yellow_duration = yellow_duration
         self.green_duration = green_duration
         self.current_color = start_color
-        self.timer = 0  # Initialize timer to keep track of light changes
-
+        self.timer = 0  
+        
     def update(self, seconds=1):
         self.timer += seconds
-        # Calculate the total duration of the traffic light cycle
         cycle_duration = self.red_duration + self.yellow_duration + self.green_duration
-        # Using modulo to cycle through the light colors
         self.timer %= cycle_duration
         if self.timer <= self.red_duration:
             self.current_color = 'red'
@@ -98,17 +96,11 @@ class TrafficLight(DynamicRoadItem):
         else:
             self.current_color = 'green'
 
+    @staticmethod
     def print_traffic_lights(traffic_lights, char_matrix):
-    # 遍历每个交通灯
-        for tl in traffic_lights:
-            # 获取交通灯当前颜色对应的符号
-            symbol = {'red': 'X', 'yellow': '-', 'green': 'O'}[tl.current_color]
-            # 获取交通灯的位置
-            row_index = len(char_matrix.map) - 1  # 假设交通灯在最底行
-            column_index = tl.mile_marker
-            # 在交通灯所在列向上搜索竖线，找到最接近的一个位置并显示交通灯
-            for i in range(row_index, -1, -1):
-                if char_matrix.map[i][column_index] == '|':
-                    char_matrix.map[i][column_index] = symbol
-                    break
-
+        first_tl_row_index = len(char_matrix.map) - 13
+        second_tl_row_index = first_tl_row_index - 13
+        symbol = {'red': 'X', 'yellow': '-', 'green': 'O'}[traffic_lights[0].current_color]
+        char_matrix.map[first_tl_row_index][traffic_lights[0].mile_marker] = symbol
+        symbol = {'green': 'O', 'red': 'X', 'yellow': '-'}[traffic_lights[1].current_color]
+        char_matrix.map[second_tl_row_index][traffic_lights[1].mile_marker] = symbol
